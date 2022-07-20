@@ -28,59 +28,57 @@ class CompanyTests {
 	Employee empl1 = new WageEmployee(ID1, BIRTH_YEAR1, EMAIL1, BASIC_SALARY, WAGE, HOURS1);
 	Employee empl2 = new SalesPerson(ID2, BIRTH_YEAR2, EMAIL2, BASIC_SALARY, SALES, PERCENT_PAY);
 	Employee empl3 = new WageEmployee(ID3, BIRTH_YEAR3, EMAIL3, BASIC_SALARY, WAGE, HOURS2);
-	Employee[] employees = {
-		empl2, empl1, empl3	
-	};
+	Employee[] employees = { empl2, empl1, empl3 };
 
 	@BeforeEach
 	void setUp() throws Exception {
-		company = new CompanyArray();
-		//TODO for HW #10
-		//company = new CompanySortedArray(); //for HW #10 
+//		company = new CompanyArray();
+		// TODO for HW #10
+		company = new CompanySortedArray(); // for HW #10
 		for (int i = 0; i < employees.length; i++) {
 			company.addEmployee(employees[i]);
 		}
 	}
 
 	@Test
-	void testAddEmployee() {
+	void testGetEmployeeIndex() {
+		Employee newEmpl = new Employee(111111111, 1980, EMAIL1, 1000);
 		long id = 111111111;
-		assertTrue(company.addEmployee(new Employee(id, 1980, EMAIL1, 1000)));
-		assertFalse(company.addEmployee(new Employee(id, 1980, EMAIL1, 1000)));
+
+		assertTrue(company.getEmployeeIndex(id) < 0);
+		company.addEmployee(newEmpl);
+		assertTrue(company.getEmployeeIndex(id) >= 0);
+
 	}
 
 	@Test
-	void testRemoveEmployee() {
-		Employee empl = company.removeEmployee(ID1);
-		assertNotNull(empl);
-		assertEquals(ID1, empl.getId());
-		empl = company.removeEmployee(ID1);
-		assertNull(empl);
-		assertTrue(company.addEmployee(empl1));
+	void testAddEmployee() {
+
+		Employee newEmpl = new Employee(111111111, 1980, EMAIL1, 1000);
+
+		assertTrue(company.addEmployee(newEmpl));
+		assertFalse(company.addEmployee(newEmpl));
 	}
 
-	@Test
-	void testGetEmployee() {
-		Employee empl = company.getEmployee(ID1);
-		assertNotNull(empl);
-		assertEquals(empl.getId(), ID1);
-		empl = company.getEmployee(11111111);
-		assertNull(empl);
-	}
-
-	@Test
-	void testComputeSalaryBudget() {
-		assertEquals(11000 + 1100 + 2000, company.computeSalaryBudget());
-	}
-
-	@Test
-	void testGetAllEmployees() {
-		Employee [] resultEmployees = company.getAllEmployees();
-		assertEquals(ID1, resultEmployees[0].getId());
-		assertEquals(ID2, resultEmployees[1].getId());
-		assertEquals(ID3, resultEmployees[2].getId());
-		assertEquals(COMPANY_SIZE, resultEmployees.length);
-		
-	}
-
+	
+	  @Test void testRemoveEmployee() { Employee empl =
+	  company.removeEmployee(ID1); assertNotNull(empl); assertEquals(ID1,
+	  empl.getId()); empl = company.removeEmployee(ID1); assertNull(empl);
+	  assertTrue(company.addEmployee(empl1)); }
+	  
+	  @Test void testGetEmployee() { Employee empl = company.getEmployee(ID1);
+	  assertNotNull(empl); assertEquals(empl.getId(), ID1); empl =
+	  company.getEmployee(11111111); assertNull(empl); }
+	  
+	  @Test void testComputeSalaryBudget() { assertEquals(11000 + 1100 + 2000,
+	  company.computeSalaryBudget()); }
+	  
+	  @Test void testGetAllEmployees() { Employee [] resultEmployees =
+	  company.getAllEmployees(); assertEquals(ID1, resultEmployees[0].getId());
+	  assertEquals(ID2, resultEmployees[1].getId()); assertEquals(ID3,
+	  resultEmployees[2].getId()); assertEquals(COMPANY_SIZE,
+	  resultEmployees.length);
+	  
+	  }
+	 
 }

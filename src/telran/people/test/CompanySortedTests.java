@@ -30,18 +30,31 @@ class CompanySortedTests {
 	Employee empl1 = new WageEmployee(ID1, BIRTH_YEAR1, EMAIL1, BASIC_SALARY, WAGE, HOURS1);
 	Employee empl2 = new SalesPerson(ID2, BIRTH_YEAR2, EMAIL2, BASIC_SALARY, SALES, PERCENT_PAY);
 	Employee empl3 = new WageEmployee(ID3, BIRTH_YEAR3, EMAIL3, BASIC_SALARY, WAGE, HOURS2);
-	Employee[] employees = {
-		empl2, empl1, empl3	
-	};
+	Employee[] employees = { empl2, empl1, empl3 };
 
 	@BeforeEach
 	void setUp() throws Exception {
-		company = new CompanyArray();
-		//TODO for HW #10
-//		company = new CompanySortedArray(); //for HW #10 
+//		company = new CompanyArray();
+		// TODO for HW #10
+		company = new CompanySortedArray(); // for HW #10
 		for (int i = 0; i < employees.length; i++) {
 			company.addEmployee(employees[i]);
 		}
+	}
+
+	@Test
+	void performanceTest() {
+		fillRandomEmployees();
+		for (int i = 0; i < N_RUNS; i++) {
+			company.getEmployee(100);
+		}
+	}
+
+	private void fillRandomEmployees() {
+		for (int i = 0; i < N_EMPLOYEES; i++) {
+			company.addEmployee(new Employee((long) (Math.random() * Long.MAX_VALUE), 1980, EMAIL1, 1000));
+		}
+
 	}
 
 	@Test
@@ -77,26 +90,11 @@ class CompanySortedTests {
 
 	@Test
 	void testGetAllEmployees() {
-		Employee [] resultEmployees = company.getAllEmployees();
+		Employee[] resultEmployees = company.getAllEmployees();
 		assertEquals(ID1, resultEmployees[0].getId());
 		assertEquals(ID2, resultEmployees[1].getId());
 		assertEquals(ID3, resultEmployees[2].getId());
 		assertEquals(COMPANY_SIZE, resultEmployees.length);
-		
-	}
-	@Test
-	void performanceTest() {
-		fillRandomEmployees();
-		for(int i = 0; i < N_RUNS; i++) {
-			company.getEmployee(100);
-		}
-	}
 
-	private void fillRandomEmployees() {
-		for (int i = 0; i < N_EMPLOYEES; i++) {
-			company.addEmployee(new Employee((long)(Math.random() * Long.MAX_VALUE), 1980, EMAIL1, 1000));
-		}
-		
 	}
-
 }

@@ -29,6 +29,7 @@ class PersonEmployeeTests {
 	private static final int POOR_SALARY = 99;
 	private static final int REACH_SALARY = 101;
 	private static final String WRONG_EMAIL = "***@gmail.com";
+	private static final int WRONG_PERSENT = 101;
 
 	@Test
 	void personTest() {
@@ -151,5 +152,21 @@ class PersonEmployeeTests {
 			res = true;
 		}
 		assertTrue(res);
+	}
+	
+
+	@Test
+	void wrongPercentPayTest() {
+		SalesPerson salesPerson = new SalesPerson(ID, BIRTH_YEAR, EMAIL_1, BASIC_SALARY, SALES, PERCENT_PAY);
+		
+		boolean res = false;
+		
+		try {
+			salesPerson.setPercentPay(WRONG_PERSENT);
+		} catch (IllegalArgumentException e) {
+			res = true;
+		}
+		assertTrue(res);
+		
 	}
 }

@@ -2,8 +2,10 @@ package telran.people;
 
 import java.util.Arrays;
 
+import telran.people.comparators.EmployeeSalaryComparator;
+import telran.people.comparators.PersonAgeComparator;
+
 public class CompanyArray implements ICompany {
-	
 protected  Employee[] employees = new Employee[0];
 	@Override
 	public boolean addEmployee(Employee empl) {
@@ -38,8 +40,7 @@ protected  Employee[] employees = new Employee[0];
 		return index < 0 ? null : employees[index];
 	}
 
-	@Override
-	public int getEmployeeIndex(long id) {
+	protected int getEmployeeIndex(long id) {
 		for(int i = 0; i < employees.length; i++) {
 			if (employees[i].getId() == id) {
 				return i;
@@ -61,6 +62,20 @@ protected  Employee[] employees = new Employee[0];
 	public Employee[] getAllEmployees() {
 		Employee[]res = Arrays.copyOf(employees, employees.length);
 		Arrays.sort(res);
+		return res;
+	}
+
+	@Override
+	public Employee [] sortEmployeesByAge() {
+		Employee[] res = Arrays.copyOf(employees, employees.length);
+		Arrays.sort(res, new PersonAgeComparator());
+		return res;
+	}
+
+	@Override
+	public Employee [] sortEmployeesBySalary() {
+		Employee[] res = Arrays.copyOf(employees, employees.length);
+		Arrays.sort(res, new EmployeeSalaryComparator());
 		return res;
 	}
 

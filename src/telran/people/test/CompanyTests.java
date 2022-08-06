@@ -2,9 +2,11 @@ package telran.people.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import telran.people.*;
 
 class CompanyTests {
@@ -24,9 +26,10 @@ class CompanyTests {
 	private static final int BIRTH_YEAR3 = 2000;
 	private static final String EMAIL3 = "empl3@gmail.com";
 	private static final Integer COMPANY_SIZE = 3;
-	private static final int N_RUNS = 1000000;
-	private static final int N_EMPLOYEES = 10000;
+	private static final int N_RUNS = 100000;
+	private static final int N_EMPLOYEES = 1000;
 	ICompany company;
+	ICompany companySorted;
 	Employee empl1 = new WageEmployee(ID1, BIRTH_YEAR1, EMAIL1, BASIC_SALARY, WAGE, HOURS1);
 	Employee empl2 = new SalesPerson(ID2, BIRTH_YEAR2, EMAIL2, BASIC_SALARY, SALES, PERCENT_PAY);
 	Employee empl3 = new WageEmployee(ID3, BIRTH_YEAR3, EMAIL3, BASIC_SALARY, WAGE, HOURS2);
@@ -36,11 +39,17 @@ class CompanyTests {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		//company = new CompanyArray();
-		company = new CompanySortedArray(); //for HW #10 
+		company = new CompanyArray();
 		for (int i = 0; i < employees.length; i++) {
 			company.addEmployee(employees[i]);
 		}
+	
+		companySorted = new CompanySortedArray(); //for HW #10 
+		for (int i = 0; i < employees.length; i++) {
+			companySorted.addEmployee(employees[i]);
+		}
+		
+
 	}
 
 	@Test
@@ -110,6 +119,43 @@ class CompanyTests {
 				empl2, empl3, empl1
 			};
 			assertArrayEquals(expected, company.sortEmployeesBySalary());
+	}
+	@Test
+	void testFindSalesPersons() {
+		Employee[] expected = {empl2};
+		assertArrayEquals(expected, company.findEmployees(new SalesPersonPredicate()));
+	}
+	@Test
+	void testFindEmployeesSalaryRange() {
+		Employee[] expectedGT10000 = {
+				empl1
+		};
+		Employee[] expected20000_30000 = {
+				
+		};
+		Employee[] expected1000_1500 = {
+				empl2
+		};
+		assertArrayEquals(expectedGT10000, 
+				company.findEmployees(new SalaryRangePredicate(10000, Integer.MAX_VALUE)));
+		assertArrayEquals(expected20000_30000,
+				company.findEmployees(new SalaryRangePredicate(20000, 30000)));
+		assertArrayEquals(expected1000_1500,
+				company.findEmployees(new SalaryRangePredicate(1000, 1500)));
+	}
+	@Test
+	void companyIterableTest() {
+		Employee [] expected = {empl1, empl2, empl3};
+		Employee [] result = getActualArray(company).getAllEmployees();
+		assertArrayEquals(expected, result);
+	}
+	
+	static CompanyArray getActualArray (ICompany company) {
+		CompanyArray res = new CompanyArray();
+		for (Employee num : company) {
+			res.addEmployee(num);
+		}
+		return res;
 	}
 
 }

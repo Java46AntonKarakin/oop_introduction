@@ -1,15 +1,12 @@
 package telran.people.test;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import telran.people.*;
 
 class CompanyTests {
@@ -126,7 +123,7 @@ class CompanyTests {
 	@Test
 	void testFindSalesPersons() {
 		Employee[] expected = { empl2 };
-		var actual = new ArrayList <Employee>();
+		var actual = new ArrayList<Employee>();
 		sourceArrayList.stream().forEach(empl -> {
 			// implement ternary variation of the code below
 			if (empl instanceof SalesPerson) {
@@ -139,13 +136,27 @@ class CompanyTests {
 	@Test
 	void testFindEmployeesSalaryRange() {
 		Employee[] expectedGT10000 = { empl1 };
-		Employee[] expected20000_30000 = {
-
-		};
+		Employee[] expected20000_30000 = {};
 		Employee[] expected1000_1500 = { empl2 };
-		assertArrayEquals(expectedGT10000, company.findEmployees(new SalaryRangePredicate(10000, Integer.MAX_VALUE)));
-		assertArrayEquals(expected20000_30000, company.findEmployees(new SalaryRangePredicate(20000, 30000)));
-		assertArrayEquals(expected1000_1500, company.findEmployees(new SalaryRangePredicate(1000, 1500)));
+
+		var actualGT10000 = new ArrayList<Employee>();
+		var actual20000_30000 = new ArrayList<Employee>();
+		var actual1000_1500 = new ArrayList<Employee>();
+
+		sourceArrayList.stream().forEach(empl -> {
+			var salary = empl.computePay();
+			if (salary >= 1000 && salary <= 1500) {
+				actual1000_1500.add(empl);
+			} else if (salary >= 10000) {
+				actualGT10000.add(empl);
+			} else if (salary >= 20000 && salary <= 30000) {
+				actual20000_30000.add(empl);
+			}
+		});
+
+		assertArrayEquals(expectedGT10000, actualGT10000.toArray(new Employee[0]));
+		assertArrayEquals(expected20000_30000, actual20000_30000.toArray(new Employee[0]));
+		assertArrayEquals(expected1000_1500, actual1000_1500.toArray(new Employee[0]));
 	}
 
 	@Test

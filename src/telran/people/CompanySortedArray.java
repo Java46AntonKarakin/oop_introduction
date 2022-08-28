@@ -1,33 +1,12 @@
 package telran.people;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class CompanySortedArray extends CompanyArray {
-
-	class CompanySortedIterator  implements Iterator<Employee> {
-		int index = 0;
-
-		@Override
-		public boolean hasNext() {
-			return index < employees.length;
-		}
-
-		@Override
-		public Employee next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			return employees[index++];
-		}
-
-	}
-
 	@Override
-	public boolean addEmployee(Employee empl) {
-
-		// calls getEmployeeIndex
+public boolean addEmployee(Employee empl) {
+		
+		//calls getEmployeeIndex
 		int ind = getEmployeeIndex(empl.getId());
 		if (ind >= 0) {
 			return false;
@@ -36,17 +15,16 @@ public class CompanySortedArray extends CompanyArray {
 		employees = Arrays.copyOf(employees, employees.length + 1);
 		System.arraycopy(employees, ind, employees, ind + 1, employees.length - 1 - ind);
 		employees[ind] = empl;
-		return true;
-
-	}
-
-	@Override
+	return true;
+		
+}
+	
+	@Override 
 	protected int getEmployeeIndex(long id) {
-
+	
 		Person pattern = new Person(id, 0, null);
 		return Arrays.binarySearch(employees, pattern);
 	}
-
 	@Override
 	public Employee[] getAllEmployees() {
 		return Arrays.copyOf(employees, employees.length);

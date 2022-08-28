@@ -5,17 +5,17 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-import telran.people.CompanySortedArray.CompanySortedIterator;
 import telran.people.comparators.EmployeeSalaryComparator;
 import telran.people.comparators.PersonAgeComparator;
 
 public class CompanyArray implements ICompany {
 protected  Employee[] employees = new Employee[0];
 private class CompanyIterator implements Iterator<Employee> {
-int index = 0;
+int currentInd = 0;
 	@Override
 	public boolean hasNext() {
-		return index < employees.length;
+		
+		return currentInd < employees.length;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ int index = 0;
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
-		return employees[index++];
+		return employees[currentInd++];
 	}
 	
 }
@@ -116,6 +116,7 @@ int index = 0;
 
 	@Override
 	public Iterator<Employee> iterator() {
+		
 		return new CompanyIterator();
 	}
 

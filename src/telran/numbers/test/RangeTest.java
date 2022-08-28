@@ -1,23 +1,18 @@
 package telran.numbers.test;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-
-import telran.numbers.OddNumbersPredicate;
-import telran.numbers.Range;
-import telran.numbers.TruePredicate;
+import org.junit.jupiter.api.*;
+import telran.numbers.*;
+import java.util.*;
 
 class RangeTest {
 	Range range = new Range(-2, 3);
+	ArrayList<Integer> sourceArrayList = getArrayListFromRange();
 
 	@BeforeEach
 	void setUp() throws Exception {
 		range = new Range(-2, 3);
+		sourceArrayList = getArrayListFromRange();
 	}
 
 	@Test
@@ -27,61 +22,35 @@ class RangeTest {
 
 	@Test
 	void iterableNoPredicateTest() {
-		range.setPredicate(null);
-		int expected[] = { -2, -1, 0, 1, 2, 3 };
-		int actual[] = getActualArray(6);
-		assertArrayEquals(expected, actual);
+		Integer expected[] = { -2, -1, 0, 1, 2, 3 };
+		assertArrayEquals(expected, sourceArrayList.toArray(new Integer[0]));
 	}
 
 	@Test
-	void iterablePredicateTestEven() {
-		// Test for HW #12
-		int expected[] = { -2, 0, 2 };
-		range.setPredicate(new OddNumbersPredicate().negate());
-		int actual[] = getActualArray(3);
+	void iterablePredicateTest() {
+		Integer expectedEven[] = { -2, 0, 2 };
+		Integer expectedOdd[] = { -1, 1, 3 };
+		var actualEvenAL = new ArrayList<Integer>();
+		var actualOddAL = new ArrayList<Integer>();
 
-		assertArrayEquals(expected, actual);
+		sourceArrayList.stream().forEach(num -> {
+			// implement ternary variation of the code below
+			if (num % 2 == 0) {
+				actualEvenAL.add(num);
+			} else {
+				actualOddAL.add(num);
+			}
+		});
+
+		assertArrayEquals(expectedEven, actualEvenAL.toArray(new Integer[0]));
+		assertArrayEquals(expectedOdd, actualOddAL.toArray(new Integer[0]));
 	}
 
-	@Test
-	void iterablePredicateTestOdd() {
-		// Test for HW #12
-		int expected[] = { -1, 1, 3 };
-		range.setPredicate(new OddNumbersPredicate());
-		int actual[] = getActualArray(3);
-
-		assertArrayEquals(expected, actual);
-	}
-
-	@Test
-	void iterablePredicateTestFalse() {
-		// Test for HW #12
-		int expected[] = {};
-		range.setPredicate(new TruePredicate().negate());
-		int actual[] = getActualArray(0);
-
-		assertArrayEquals(expected, actual);
-	}
-
-	@Test
-	void iterablePredicateTestTrue() {
-		// Test for HW #12
-		int expected[] = { -2, -1, 0, 1, 2, 3 };
-		range.setPredicate(new TruePredicate());
-		int actual[] = getActualArray(6);
-
-		assertArrayEquals(expected, actual);
-	}
-
-	private int[] getActualArray(int size) {
-		int[] res = new int[size];
-		var test = new ArrayList<Integer>();
-		int ind = 0;
-		for (int num : range) {
-			res [ind] = num;		
-			ind++;
+	private ArrayList<Integer> getArrayListFromRange() {
+		var res = new ArrayList<Integer>();
+		for (Integer i : range) {
+			res.add(i);
 		}
 		return res;
 	}
-
 }

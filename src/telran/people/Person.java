@@ -40,9 +40,6 @@ public class Person implements Comparable<Person>{
 		return Long.compare(this.id, o.id);
 	}
 	
-	@Override
-	public String toString () {
-		return "ID ----> " + getId();
-	}
+	
 
 }

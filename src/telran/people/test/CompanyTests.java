@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import telran.people.*;
 
 class CompanyTests {
@@ -26,29 +29,25 @@ class CompanyTests {
 	private static final int BIRTH_YEAR3 = 2000;
 	private static final String EMAIL3 = "empl3@gmail.com";
 	private static final Integer COMPANY_SIZE = 3;
-	private static final int N_RUNS = 100000;
+	private static final int N_RUNS = 10000;
 	private static final int N_EMPLOYEES = 1000;
 	ICompany company;
-	ICompany companySorted;
+	ArrayList<Employee> sourceArrayList = new ArrayList<>();
 	Employee empl1 = new WageEmployee(ID1, BIRTH_YEAR1, EMAIL1, BASIC_SALARY, WAGE, HOURS1);
 	Employee empl2 = new SalesPerson(ID2, BIRTH_YEAR2, EMAIL2, BASIC_SALARY, SALES, PERCENT_PAY);
 	Employee empl3 = new WageEmployee(ID3, BIRTH_YEAR3, EMAIL3, BASIC_SALARY, WAGE, HOURS2);
-	Employee[] employees = {
-		empl2, empl1, empl3	
-	};
+	Employee[] employees = { empl2, empl1, empl3 };
 
 	@BeforeEach
 	void setUp() throws Exception {
 		company = new CompanyArray();
+
+		// company = new CompanySortedArray(); //for HW #10
 		for (int i = 0; i < employees.length; i++) {
 			company.addEmployee(employees[i]);
 		}
-	
-		companySorted = new CompanySortedArray(); //for HW #10 
-		for (int i = 0; i < employees.length; i++) {
-			companySorted.addEmployee(employees[i]);
-		}
-		
+
+		sourceArrayList = getArrayListOfEmployees();
 
 	}
 
@@ -85,75 +84,107 @@ class CompanyTests {
 
 	@Test
 	void testGetAllEmployees() {
-		Employee [] resultEmployees = company.getAllEmployees();
+		Employee[] resultEmployees = company.getAllEmployees();
 		assertEquals(ID1, resultEmployees[0].getId());
 		assertEquals(ID2, resultEmployees[1].getId());
 		assertEquals(ID3, resultEmployees[2].getId());
 		assertEquals(COMPANY_SIZE, resultEmployees.length);
-		
+
 	}
-	@Test
+
+//	@Test
 	void performanceTest() {
 		fillRandomEmployees();
-		for(int i = 0; i < N_RUNS; i++) {
+		for (int i = 0; i < N_RUNS; i++) {
 			company.getEmployee(100);
 		}
 	}
 
 	private void fillRandomEmployees() {
 		for (int i = 0; i < N_EMPLOYEES; i++) {
-			company.addEmployee(new Employee((long)(Math.random() * Long.MAX_VALUE), 1980, EMAIL1, 1000));
+			company.addEmployee(new Employee((long) (Math.random() * Long.MAX_VALUE), 1980, EMAIL1, 1000));
 		}
-		
+
 	}
+
 	@Test
 	void testSortByAge() {
-		Employee[] expected = {
-			empl3, empl1, empl2	
-		};
-		assertArrayEquals(expected, company.sortEmployeesByAge());
+		Employee[] expected = { empl3, empl1, empl2 };
+
+		sourceArrayList.sort((Employee empl1, Employee empl2) -> empl2.getBirthYear() - empl1.getBirthYear());
+
+		assertArrayEquals(expected, sourceArrayList.toArray(new Employee[0]));
 	}
+
 	@Test
 	void testSortBySalary() {
-		Employee[] expected = {
-				empl2, empl3, empl1
-			};
-			assertArrayEquals(expected, company.sortEmployeesBySalary());
+		Employee[] expected = { empl2, empl3, empl1 };
+		sourceArrayList.sort((Employee empl1, Employee empl2) -> empl1.computePay() - empl2.computePay());
+		assertArrayEquals(expected, sourceArrayList.toArray(new Employee[0]));
 	}
+
 	@Test
 	void testFindSalesPersons() {
-		Employee[] expected = {empl2};
-		assertArrayEquals(expected, company.findEmployees(new SalesPersonPredicate()));
+		Employee[] expected = { empl2 };
+		var actual = new ArrayList <Employee>();
+		sourceArrayList.stream().forEach(empl -> {
+			// implement ternary variation of the code below
+			if (empl instanceof SalesPerson) {
+				actual.add(empl);
+			}
+		});
+		assertArrayEquals(expected, actual.toArray(new Employee[0]));
 	}
+
 	@Test
 	void testFindEmployeesSalaryRange() {
-		Employee[] expectedGT10000 = {
-				empl1
-		};
+		Employee[] expectedGT10000 = { empl1 };
 		Employee[] expected20000_30000 = {
-				
+
 		};
-		Employee[] expected1000_1500 = {
-				empl2
-		};
-		assertArrayEquals(expectedGT10000, 
-				company.findEmployees(new SalaryRangePredicate(10000, Integer.MAX_VALUE)));
-		assertArrayEquals(expected20000_30000,
-				company.findEmployees(new SalaryRangePredicate(20000, 30000)));
-		assertArrayEquals(expected1000_1500,
-				company.findEmployees(new SalaryRangePredicate(1000, 1500)));
+		Employee[] expected1000_1500 = { empl2 };
+		assertArrayEquals(expectedGT10000, company.findEmployees(new SalaryRangePredicate(10000, Integer.MAX_VALUE)));
+		assertArrayEquals(expected20000_30000, company.findEmployees(new SalaryRangePredicate(20000, 30000)));
+		assertArrayEquals(expected1000_1500, company.findEmployees(new SalaryRangePredicate(1000, 1500)));
 	}
+
 	@Test
 	void companyIterableTest() {
-		Employee [] expected = {empl1, empl2, empl3};
-		Employee [] result = getActualArray(company).getAllEmployees();
-		assertArrayEquals(expected, result);
+		Employee[] expected = { empl1, empl2, empl3 };
+		Employee[] actual = getSortedEmployeesFromIterating(3);
+		assertArrayEquals(expected, actual);
+
 	}
-	
-	static CompanyArray getActualArray (ICompany company) {
-		CompanyArray res = new CompanyArray();
-		for (Employee num : company) {
-			res.addEmployee(num);
+
+	private Employee[] getSortedEmployeesFromIterating(int size) {
+		Employee[] res = new Employee[size];
+		int ind = 0;
+		for (Employee empl : company) {
+			res[ind++] = empl;
+		}
+		if (!(company instanceof CompanySortedArray)) {
+			Arrays.sort(res);
+		}
+		return res;
+	}
+
+	@Test
+	void NoSuchElementTest() {
+		boolean flException = false;
+		ICompany anotherCompany = new CompanyArray();
+		Iterator<Employee> it = anotherCompany.iterator();
+		try {
+			it.next();
+		} catch (NoSuchElementException e) {
+			flException = true;
+		}
+		assertTrue(flException);
+	}
+
+	private ArrayList<Employee> getArrayListOfEmployees() {
+		var res = new ArrayList<Employee>();
+		for (Employee empl : company) {
+			res.add(empl);
 		}
 		return res;
 	}
